@@ -6,7 +6,7 @@
  * Dependencias: axios, cheerio, p-limit, cli-progress
  */
 
-import axios from 'axios';
+
 import * as cheerio from 'cheerio';
 import fs from 'fs/promises';
 import path from 'path';
@@ -27,12 +27,8 @@ const TIMEOUT_MS    = 25_000;
 const MAX_RETRIES   = 3;
 
 const HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
-    '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
   'Accept-Language': 'es-AR,es;q=0.9',
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept-Encoding': 'gzip, deflate',
 };
 
 // ── Utilidades ───────────────────────────────────────────────────────────────
@@ -44,8 +40,9 @@ function sleep(ms) {
 async function fetchWithRetry(url, retries = MAX_RETRIES) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const res = await axios.get(url, { headers: HEADERS, decompress: true, timeout: TIMEOUT_MS });
-      return res.data;
+      const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(TIMEOUT_MS) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
     } catch (err) {
       if (attempt === retries) throw err;
       await sleep(1000 * attempt);

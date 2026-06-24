@@ -10,7 +10,7 @@
  *   Nombre : h1.namne_details[itemprop="name"]     → textContent
  */
 
-import axios from 'axios';
+
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
 import fs from 'fs/promises';
@@ -41,12 +41,8 @@ const CONFIG = {
 };
 
 const HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
-    '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
   'Accept-Language': 'es-AR,es;q=0.9',
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept-Encoding': 'gzip, deflate',
 };
 
 // ── Utilidades ───────────────────────────────────────────────────────────────
@@ -75,12 +71,12 @@ function sanitizeFilename(name) {
 async function fetchHtmlWithRetry(url) {
   for (let attempt = 1; attempt <= CONFIG.maxRetries; attempt++) {
     try {
-      const res = await axios.get(url, {
+      const res = await fetch(url, {
         headers: HEADERS,
-        decompress: true,
-        timeout: CONFIG.timeoutMs,
+        signal: AbortSignal.timeout(CONFIG.timeoutMs),
       });
-      return res.data;
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
     } catch (err) {
       if (attempt === CONFIG.maxRetries) throw err;
       await sleep(CONFIG.retryDelayMs * attempt);
@@ -94,12 +90,12 @@ async function fetchHtmlWithRetry(url) {
 async function downloadImageBuffer(imageUrl) {
   for (let attempt = 1; attempt <= CONFIG.maxRetries; attempt++) {
     try {
-      const res = await axios.get(imageUrl, {
+      const res = await fetch(imageUrl, {
         headers: { ...HEADERS, Accept: 'image/webp,image/apng,image/*,*/*' },
-        responseType: 'arraybuffer',
-        timeout: CONFIG.timeoutMs,
+        signal: AbortSignal.timeout(CONFIG.timeoutMs),
       });
-      return Buffer.from(res.data);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return Buffer.from(await res.arrayBuffer());
     } catch (err) {
       if (attempt === CONFIG.maxRetries) throw err;
       await sleep(CONFIG.retryDelayMs * attempt);

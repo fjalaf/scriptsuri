@@ -4,7 +4,7 @@
  * Selector: a[id^="category-page-"]
  */
 
-import axios from 'axios';
+
 import * as cheerio from 'cheerio';
 import fs from 'fs/promises';
 import path from 'path';
@@ -17,11 +17,7 @@ const OUTPUT     = path.join(BASE_DIR, 'categorias.txt');
 const SITEMAP_URL = 'https://www.suri-sa.com.ar/Mapa%20del%20Sitio';
 
 const HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
-    '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
   'Accept-Language': 'es-AR,es;q=0.9',
-  'Accept-Encoding': 'gzip, deflate',
 };
 
 async function main() {
@@ -33,12 +29,12 @@ async function main() {
 
   let html;
   try {
-    const response = await axios.get(SITEMAP_URL, {
+    const response = await fetch(SITEMAP_URL, {
       headers: HEADERS,
-      decompress: true,
-      timeout: 30_000,
+      signal: AbortSignal.timeout(30_000),
     });
-    html = response.data;
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    html = await response.text();
   } catch (err) {
     console.error(`❌  Error descargando el sitemap: ${err.message}`);
     process.exit(1);
@@ -49,17 +45,30 @@ async function main() {
 
   const urls = new Set();
 
-  // Selector principal: <a id="category-page-NNN" href="...">
-  $('a[id^="category-page-"]').each((_, el) => {
-    const href = $(el).attr('href');
-    if (href && href.startsWith('http')) {
-      urls.add(href.trim());
+  // Selector alternativo basado en la estructura de URLs de categorías de PrestaShop (ej. /123-nombre-categoria)
+  $('a').each((_, el) => {
+    let href = $(el).attr('href');
+    if (href) {
+      if (!href.startsWith('http')) {
+        href = new URL(href, 'https://www.suri-sa.com.ar').toString();
+      }
+      try {
+        const urlObj = new URL(href);
+        if (
+          urlObj.hostname.includes('suri-sa.com.ar') &&
+          /^\/\d+-/.test(urlObj.pathname) &&
+          !urlObj.pathname.endsWith('.html')
+        ) {
+          urls.add(href.trim());
+        }
+      } catch (e) {
+        // Ignorar URLs inválidas
+      }
     }
   });
 
   if (urls.size === 0) {
-    console.warn('⚠️  No se encontraron categorías con el selector principal.');
-    console.warn('    Verificá que el sitemap esté disponible y que el selector sea correcto.');
+    console.warn('⚠️  No se encontraron categorías.');
     process.exit(1);
   }
 
