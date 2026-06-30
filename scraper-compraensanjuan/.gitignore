@@ -1,0 +1,15 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (nunca commitear secretos)
+.env
+
+# Carpeta de salida (datos generados)
+output/
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
