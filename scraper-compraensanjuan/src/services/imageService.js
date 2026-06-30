@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createWriteStream } from 'fs';
-import { mkdir } from 'fs/promises';
+import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { config } from '../config/config.js';
 import { logger } from '../utils/logger.js';
@@ -61,6 +61,10 @@ export async function processPropertyImages(property, outputBaseDir) {
   // Crear el directorio de la propiedad: output/slug/
   const propertyDir = path.join(process.cwd(), outputBaseDir, slug);
   await mkdir(propertyDir, { recursive: true });
+
+  // Guardar la información de la propiedad en un archivo .txt
+  const txtPath = path.join(propertyDir, 'propiedad.txt');
+  await writeFile(txtPath, JSON.stringify(property, null, 2), 'utf-8');
 
   const imagenesLocales = [];
 
