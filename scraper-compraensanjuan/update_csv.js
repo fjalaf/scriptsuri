@@ -64,8 +64,16 @@ properties.forEach(prop => {
     }
 
     // Map fields
+    let operation = prop.tipoOperacion?.toUpperCase();
+    if (prop.tipoPropiedad === 'LOTE') {
+        operation = 'VENTA';
+    }
+    if (!operation) {
+        operation = 'Consultar';
+    }
+
     updateCol(row, 'COMPRA EN SAN JUAN', prop.url);
-    updateCol(row, 'TIPO DE OPERACIÓN', prop.tipoOperacion?.toUpperCase());
+    updateCol(row, 'TIPO DE OPERACIÓN', operation);
     updateCol(row, 'TIPO DE PROPIEDAD', prop.tipoPropiedad);
     updateCol(row, 'DEPARTAMENTO', prop.departamento);
     updateCol(row, 'BARRIO', prop.barrio);
@@ -78,7 +86,7 @@ properties.forEach(prop => {
     updateCol(row, 'CANT.BANOS', prop.baños);
     updateCol(row, 'COCHERA', prop.cocheras);
     updateCol(row, 'ORIENTACION', prop.orientacion?.toUpperCase());
-    updateCol(row, 'AÑO DE CONST', prop.antiguedad);
+    updateCol(row, 'AÑO DE CONST', prop.antiguedad || 'Sin especificar');
     
     // PERM/FINAN mapping from aptoCredito
     if (prop.aptoCredito === 'SI' || prop.aptoCredito === 'SÍ') {
@@ -89,8 +97,15 @@ properties.forEach(prop => {
     }
     
     updateCol(row, 'EXPENSAS', prop.expensas);
-    updateCol(row, 'MonedaP', prop.moneda === 'USD' ? 'DOLARES' : (prop.moneda === 'ARS' ? 'PESOS' : prop.moneda));
-    updateCol(row, 'PRECIO', prop.precio);
+    
+    let monedaMapped = prop.moneda === 'USD' ? 'DOLARES' : (prop.moneda === 'ARS' ? 'PESOS' : prop.moneda);
+    if (operation === 'VENTA') {
+        updateCol(row, 'MonedaP', monedaMapped);
+        updateCol(row, 'PRECIO', prop.precio);
+    } else if (operation === 'ALQUILER') {
+        updateCol(row, 'MonedaM', monedaMapped);
+        updateCol(row, 'Mensual', prop.precio);
+    }
     
     // Defaults for new rows
     if (!row[colIndex['ESTADO']]) {
