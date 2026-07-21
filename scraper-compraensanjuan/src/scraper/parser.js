@@ -22,18 +22,28 @@ function createEmptyProperty() {
     titulo:           null,
     subtitulo:        null,
     tipoOperacion:    null,
+    tipoPropiedad:    null,
     categoria:        null,
     precio:           null,
     moneda:           null,
     ubicacion:        null,
     direccion:        null,
+    departamento:     null,
+    barrio:           null,
+    numero:           null,
+    calle:            null,
     descripcion:      null,
     dormitorios:      null,
+    ambientes:        null,
     baños:            null,
     cocheras:         null,
+    plantas:          null,
     superficieTotal:  null,
     superficieCubierta: null,
     antiguedad:       null,
+    orientacion:      null,
+    aptoCredito:      null,
+    expensas:         null,
     estado:           null,
     caracteristicas:  [],
     nombreInmobiliaria: null,
@@ -54,7 +64,7 @@ function createEmptyProperty() {
  */
 function extractIdFromUrl(url) {
   if (!url) return null;
-  const match = url.match(/\/anuncio\/(\d+)\//);
+  const match = url.match(/\/anuncio(?:_[a-z]+)?\/(\d+)\//);
   return match ? match[1] : null;
 }
 
@@ -150,18 +160,47 @@ function extractUbicacion($) {
 
   for (const selector of candidates) {
     const text = cleanText($(selector).first().text());
-    if (text) return text;
+    if (text) {
+      return text.replace(/^ubicaci[oó]n:\s*/i, '').trim() || text;
+    }
   }
   return null;
 }
 
 /**
- * Extrae la dirección exacta si está disponible.
+ * Extrae los datos detallados de ubicación desde la tabla de características.
+ *
+ * @param {object} $
+ * @returns {object}
+ */
+function extractDatosUbicacion($) {
+  const result = {
+    calle: null,
+    numero: null,
+    barrio: null,
+    departamento: null,
+  };
+  $('.name-caracteristica').each((_, el) => {
+    const label = cleanText($(el).contents().filter(function() { return this.nodeType === 3; }).text()) ?? '';
+    const valueText = cleanText($(el).find('.caracteristica').text()) ?? '';
+    const lower = label.toLowerCase().replace(':', '');
+    
+    if (lower === 'calle') result.calle = valueText;
+    else if (lower === 'número' || lower === 'numero') result.numero = valueText;
+    else if (lower === 'barrio') result.barrio = valueText;
+    else if (lower === 'departamento') result.departamento = valueText;
+  });
+  return result;
+}
+
+/**
+ * Extrae la dirección exacta si está disponible (fallback para cuando no hay características detalladas).
  *
  * @param {object} $
  * @returns {string|null}
  */
-function extractDireccion($) {
+function extractDireccionFallback($) {
+
   const candidates = [
     '[class*="direccion"]',
     '[class*="address"]',
@@ -186,21 +225,31 @@ function extractDireccion($) {
 function extractCaracteristicasTecnicas($) {
   const result = {
     dormitorios:       null,
+    ambientes:         null,
     baños:             null,
     cocheras:          null,
+    plantas:           null,
     superficieTotal:   null,
     superficieCubierta: null,
     antiguedad:        null,
+    orientacion:       null,
+    aptoCredito:       null,
+    expensas:          null,
     estado:            null,
   };
 
   const fieldMap = [
-    { patterns: ['dormitorio', 'habitacion', 'ambiente'], field: 'dormitorios', parser: parseIntOrNull },
+    { patterns: ['dormitorio', 'habitacion'], field: 'dormitorios', parser: parseIntOrNull },
+    { patterns: ['ambiente'],                             field: 'ambientes',   parser: parseIntOrNull },
     { patterns: ['baño', 'bano', 'sanitario'],            field: 'baños',       parser: parseIntOrNull },
     { patterns: ['cochera', 'garage'],                    field: 'cocheras',    parser: parseIntOrNull },
+    { patterns: ['planta', 'piso'],                       field: 'plantas',     parser: parseIntOrNull },
     { patterns: ['sup.*total'],                           field: 'superficieTotal', parser: parseFloatOrNull },
     { patterns: ['sup.*cubierta'],                        field: 'superficieCubierta', parser: parseFloatOrNull },
     { patterns: ['antigüedad', 'antiguedad', 'año'],      field: 'antiguedad',  parser: cleanText },
+    { patterns: ['orientaci.n', 'orientacion'],           field: 'orientacion', parser: cleanText },
+    { patterns: ['apto cr.dito', 'apto credito'],         field: 'aptoCredito', parser: cleanText },
+    { patterns: ['expensa'],                              field: 'expensas',    parser: parseIntOrNull },
     { patterns: ['estado', 'condicion'],                  field: 'estado',      parser: cleanText },
   ];
 
@@ -211,7 +260,7 @@ function extractCaracteristicasTecnicas($) {
     const lower = label.toLowerCase();
 
     for (const { patterns, field, parser } of fieldMap) {
-      if (result[field] !== null) continue;
+      if (result[field] !== null && result[field] !== 'Sin especificar') continue;
       const matches = patterns.some((p) => new RegExp(p, 'i').test(lower));
       if (matches) {
         result[field] = parser(valueText);
@@ -294,6 +343,27 @@ function extractCategoria($) {
     const text = cleanText($(selector).first().text());
     if (text) return text;
   }
+  return null;
+}
+
+/**
+ * Determina el tipo de propiedad basándose en la categoría, título y descripción.
+ *
+ * @param {string|null} categoria
+ * @param {string|null} titulo
+ * @param {string|null} descripcion
+ * @returns {string|null}
+ */
+function extractTipoPropiedad(categoria, titulo, descripcion) {
+  const combinedText = `${categoria || ''} ${titulo || ''} ${descripcion || ''}`.toUpperCase();
+  
+  if (combinedText.includes('DEPARTAMENTO') || combinedText.includes('MONOAMBIENTE')) return 'DEPARTAMENTO';
+  if (combinedText.includes('CASA') || combinedText.includes('CABAÑA') || combinedText.includes('DUPLEX') || combinedText.includes('DÚPLEX') || combinedText.includes('CHALET')) return 'CASA';
+  if (combinedText.includes('LOTE') || combinedText.includes('TERRENO') || combinedText.includes('PARCELA')) return 'LOTE';
+  if (combinedText.includes('OFICINA')) return 'OFICINAS';
+  if (combinedText.includes('COMERCIAL') || combinedText.includes('LOCAL') || combinedText.includes('GALPON') || combinedText.includes('GALPÓN') || combinedText.includes('FONDO DE COMERCIO')) return 'COMERCIAL';
+  if (combinedText.includes('CONSULTORIO')) return 'CONSULTORIO';
+  
   return null;
 }
 
@@ -388,19 +458,8 @@ function extractFechaPublicacion($) {
  * @returns {string[]}
  */
 function extractImagenes($) {
-  const imagenes = [];
-  const seen = new Set();
-
-  $('img').each((_, el) => {
-    const src = $(el).attr('src') || $(el).attr('data-src');
-    if (src && src.includes('fotos_inmuebles') && !seen.has(src)) {
-      const absolute = buildAbsoluteUrl(config.baseUrl, src);
-      seen.add(src);
-      imagenes.push(absolute);
-    }
-  });
-
-  return imagenes;
+  // Las imágenes se deshabilitaron temporalmente por pedido del usuario
+  return [];
 }
 
 // ─── Función principal del parser ─────────────────────────────────────────────
@@ -429,6 +488,7 @@ export function parseProperty(html, url) {
   // Clasificación
   property.tipoOperacion = extractTipoOperacion($);
   property.categoria     = extractCategoria($);
+  property.tipoPropiedad = extractTipoPropiedad(property.categoria, property.titulo, property.descripcion);
 
   // Precio
   const { precio, moneda } = extractPrecio($);
@@ -437,16 +497,32 @@ export function parseProperty(html, url) {
 
   // Localización
   property.ubicacion = extractUbicacion($);
-  property.direccion = extractDireccion($);
+  
+  const datosUbicacion = extractDatosUbicacion($);
+  property.departamento = datosUbicacion.departamento;
+  property.barrio = datosUbicacion.barrio;
+  property.calle = datosUbicacion.calle;
+  property.numero = datosUbicacion.numero;
+  
+  if (datosUbicacion.calle) {
+    property.direccion = datosUbicacion.numero ? `${datosUbicacion.calle} ${datosUbicacion.numero}` : datosUbicacion.calle;
+  } else {
+    property.direccion = extractDireccionFallback($);
+  }
 
   // Características técnicas
   const tecnicas = extractCaracteristicasTecnicas($);
   property.dormitorios        = tecnicas.dormitorios;
+  property.ambientes          = tecnicas.ambientes;
   property.baños              = tecnicas.baños;
   property.cocheras           = tecnicas.cocheras;
+  property.plantas            = tecnicas.plantas;
   property.superficieTotal    = tecnicas.superficieTotal;
   property.superficieCubierta = tecnicas.superficieCubierta;
   property.antiguedad         = tecnicas.antiguedad;
+  property.orientacion        = tecnicas.orientacion;
+  property.aptoCredito        = tecnicas.aptoCredito;
+  property.expensas           = tecnicas.expensas;
   property.estado             = tecnicas.estado;
 
   // Lista de características adicionales

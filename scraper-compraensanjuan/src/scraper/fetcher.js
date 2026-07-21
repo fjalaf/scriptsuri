@@ -33,10 +33,11 @@ export async function fetchHtml(url) {
 
   try {
     const response = await client.get(url, {
-      responseType: 'text',
+      responseType: 'arraybuffer',
     });
 
-    return response.data;
+    const decoder = new TextDecoder('iso-8859-1');
+    return decoder.decode(response.data);
   } catch (error) {
     const status = error.response?.status ?? 'sin respuesta';
     logger.error(`Falló GET ${url} — HTTP ${status}: ${error.message}`);
