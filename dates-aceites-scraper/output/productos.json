@@ -1,0 +1,137 @@
+[
+  {
+    "producto": "Aceite de Oliva Virgen Extra",
+    "variedades": [
+      {
+        "variedad": "250cc Vidrio",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-250cc-vidrio.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-250cc-vidrio.jpg"
+      },
+      {
+        "variedad": "250cc PET",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-250cc-pet.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-250cc-pet.jpg"
+      },
+      {
+        "variedad": "Spray 200cc",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-spray-200cc.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-spray-200cc.jpg"
+      },
+      {
+        "variedad": "500cc Vidrio",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-500cc-vidrio.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-500cc-vidrio.jpg"
+      },
+      {
+        "variedad": "500cc PET",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-500cc-pet.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-500cc-pet.jpg"
+      },
+      {
+        "variedad": "1L",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-1000cc.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-1000cc.jpg"
+      },
+      {
+        "variedad": "2L",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-2000cc.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-2000cc.jpg"
+      },
+      {
+        "variedad": "5L",
+        "imagen_url": "https://dates-aceites.com.ar/products/aceite-5000cc.jpg",
+        "imagen_local": "imagenes/aceite-de-oliva-virgen-extra/aceite-5000cc.jpg"
+      }
+    ]
+  },
+  {
+    "producto": "Aceitunas Verdes",
+    "variedades": [
+      {
+        "variedad": "Doypack 200g",
+        "imagen_url": "https://dates-aceites.com.ar/products/verdes-doypack-200g.jpg",
+        "imagen_local": "imagenes/aceitunas-verdes/verdes-doypack-200g.jpg"
+      },
+      {
+        "variedad": "330g",
+        "imagen_url": "https://dates-aceites.com.ar/products/verdes-330g.jpg",
+        "imagen_local": "imagenes/aceitunas-verdes/verdes-330g.jpg"
+      },
+      {
+        "variedad": "500g",
+        "imagen_url": "https://dates-aceites.com.ar/products/verdes-500g.jpg",
+        "imagen_local": "imagenes/aceitunas-verdes/verdes-500g.jpg"
+      },
+      {
+        "variedad": "1kg",
+        "imagen_url": "https://dates-aceites.com.ar/products/verdes-1000g.jpg",
+        "imagen_local": "imagenes/aceitunas-verdes/verdes-1000g.jpg"
+      },
+      {
+        "variedad": "5kg",
+        "imagen_url": "https://dates-aceites.com.ar/products/verdes-5000g.jpg",
+        "imagen_local": "imagenes/aceitunas-verdes/verdes-5000g.jpg"
+      }
+    ]
+  },
+  {
+    "producto": "Aceitunas Griegas",
+    "variedades": [
+      {
+        "variedad": "Doypack 330g",
+        "imagen_url": "https://dates-aceites.com.ar/products/griegas-doypack-330g.jpg",
+        "imagen_local": "imagenes/aceitunas-griegas/griegas-doypack-330g.jpg"
+      },
+      {
+        "variedad": "330g",
+        "imagen_url": "https://dates-aceites.com.ar/products/griegas-330g.jpg",
+        "imagen_local": "imagenes/aceitunas-griegas/griegas-330g.jpg"
+      },
+      {
+        "variedad": "500g",
+        "imagen_url": "https://dates-aceites.com.ar/products/griegas-500g.jpg",
+        "imagen_local": "imagenes/aceitunas-griegas/griegas-500g.jpg"
+      },
+      {
+        "variedad": "1kg",
+        "imagen_url": "https://dates-aceites.com.ar/products/griegas-1000g.jpg",
+        "imagen_local": "imagenes/aceitunas-griegas/griegas-1000g.jpg"
+      },
+      {
+        "variedad": "5kg",
+        "imagen_url": "https://dates-aceites.com.ar/products/griegas-5000g.jpg",
+        "imagen_local": "imagenes/aceitunas-griegas/griegas-5000g.jpg"
+      }
+    ]
+  },
+  {
+    "producto": "Aceitunas Negras Natural",
+    "variedades": [
+      {
+        "variedad": "Doypack 200g",
+        "imagen_url": "https://dates-aceites.com.ar/products/negras-doypack-200g.jpg",
+        "imagen_local": "imagenes/aceitunas-negras-natural/negras-doypack-200g.jpg"
+      },
+      {
+        "variedad": "330g",
+        "imagen_url": "https://dates-aceites.com.ar/products/negras-330g.jpg",
+        "imagen_local": "imagenes/aceitunas-negras-natural/negras-330g.jpg"
+      },
+      {
+        "variedad": "500g",
+        "imagen_url": "https://dates-aceites.com.ar/products/negras-500g.jpg",
+        "imagen_local": "imagenes/aceitunas-negras-natural/negras-500g.jpg"
+      },
+      {
+        "variedad": "1kg",
+        "imagen_url": "https://dates-aceites.com.ar/products/negras-1000g.jpg",
+        "imagen_local": "imagenes/aceitunas-negras-natural/negras-1000g.jpg"
+      },
+      {
+        "variedad": "5kg",
+        "imagen_url": "https://dates-aceites.com.ar/products/negras-5000g.jpg",
+        "imagen_local": "imagenes/aceitunas-negras-natural/negras-5000g.jpg"
+      }
+    ]
+  }
+]
